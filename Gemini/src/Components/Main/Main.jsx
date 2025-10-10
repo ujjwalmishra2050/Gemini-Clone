@@ -1,115 +1,132 @@
-import  {useContext, useEffect, useRef, useState} from 'react';
-import './Main.css';
-import {assets} from '../../../assets/assets';
-import {Context} from "../../Context/ContextFile";
-
+import { useContext } from "react";
+import { assets } from "../../../assets/assets";
+import "./Main.css";
+import { Context } from "../../Context/ContextFile";
 const Main = () => {
-    const {onSent, recentPrompt, showResult, loading, resultData, setInput, input} = useContext(Context);
-    const resultRef = useRef(null);
-    const [rows, setRows] = useState(1);
+	const {
+		onSent,
+		recentPrompt,
+		showResults,
+		loading,
+		resultData,
+		setInput,
+		input,
+	} = useContext(Context);
 
-    useEffect(() => {
-        const updateRows = () => {
-            if (window.innerWidth <= 600) {
-                setRows(2);
-            } else {
-                setRows(1);
-            }
-        };
+    const handleCardClick = (promptText) => {
+			setInput(promptText);
+		};
+	return (
+		<div className="main">
+			<div className="nav">
+				<p>Gemini</p>
+				<img src={assets.user_icon} alt="" />
+			</div>
+			<div className="main-container">
+				{!showResults ? (
+					<>
+						<div className="greet">
+							<p>
+								<span>Hello , Dev </span>
+							</p>
+							<p>How Can i Help You Today?</p>
+						</div>
+						<div className="cards">
+							<div
+								className="card"
+								onClick={() =>
+									handleCardClick("Suggest Some Place To Visit In India.")
+								}
+							>
+								<p>Suggest Some Place To Visit In India.</p>
+								<img src={assets.compass_icon} alt="" />
+							</div>
+							<div
+								className="card"
+								onClick={() =>
+									handleCardClick(
+										"Explain the process of photosynthesis in simple terms"
+									)
+								}
+							>
+								<p>Explain the process of photosynthesis in simple terms </p>
+								<img src={assets.message_icon} alt="" />
+							</div>
+							<div
+								className="card"
+								onClick={() =>
+									handleCardClick("How do you create a responsive navbar using CSS and JavaScript?")
+								}
+							>
+								<p>How do you create a responsive navbar using CSS and JavaScript?</p>
+								<img src={assets.bulb_icon} alt="" />
+							</div>
+							<div
+								className="card"
+								onClick={() => {
+									handleCardClick(
+										"What are some essential skills for becoming a front-end developer?"
+									);
+								}}
+							>
+								<p>What are some essential skills for becoming a front-end developer?</p>
+								<img src={assets.code_icon} alt="" />
+							</div>
+						</div>
+					</>
+				) : (
+					<div className="result">
+						<div className="result-title">
+							<img src={assets.user_icon} alt="" />
+							<p>{recentPrompt}</p>
+						</div>
+						<div className="result-data">
+							<img src={assets.gemini_icon} alt="" />
+							{loading ? (
+								<div className="loader">
+									<hr />
+									<hr />
+									<hr />
+								</div>
+							) : (
+								<p dangerouslySetInnerHTML={{ __html: resultData }}></p>
+							)}
+						</div>
+					</div>
+				)}
 
-        updateRows();
-        window.addEventListener('resize', updateRows);
-        return () => window.removeEventListener('resize', updateRows);
-    }, []);
-
-    useEffect(() => {
-        if (resultRef.current) {
-            resultRef.current.scrollTop = resultRef.current.scrollHeight;
-        }
-    }, [resultData]);
-
-    return (
-        <main className="main">
-            <nav className="nav">
-                <p>Gemini</p>
-                <img src={assets.user_icon} alt=""/>
-            </nav>
-            <div className="main-container">
-
-                {!showResult
-                    ? <>
-                        <div className="greet">
-                            <p><span>Hello, Dev</span></p>
-                            <p>How can I help you today?</p>
-                        </div>
-                        <div className="cards">
-                            <div className="card"
-                                 onClick={() => setInput("Suggest beautiful places to see on an upcoming road trip")}>
-                                <p>Suggest beautiful places to see on an upcoming road trip</p>
-                                <img src={assets.compass_icon} alt=""/>
-                            </div>
-                            <div className="card"
-                                 onClick={() => setInput("Briefly summarize this concept: urban planning")}>
-                                <p>Briefly summarize this concept: urban planning</p>
-                                <img src={assets.bulb_icon} alt=""/>
-                            </div>
-                            <div className="card"
-                                 onClick={() => setInput("Brainstorm team bonding activities for our work retreat")}>
-                                <p>Brainstorm team bonding activities for our work retreat</p>
-                                <img src={assets.message_icon} alt=""/>
-                            </div>
-                            <div className="card" onClick={() => setInput("Tell me about React js and React native")}>
-                                <p>Tell me about React js and React native</p>
-                                <img src={assets.code_icon} alt=""/>
-                            </div>
-                        </div>
-                    </>
-                    :
-                    <div className='result' ref={resultRef}>
-                        <div className="result-title">
-                            <img src={assets.user_icon} alt=""/>
-                            <p>{recentPrompt}</p>
-                        </div>
-                        <div className="result-data">
-                            <img className="result-data-icon" src={assets.gemini_icon} alt=""/>
-                            {loading ?
-                                <div className='loader'>
-                                    <hr/>
-                                    <hr/>
-                                    <hr/>
-                                </div>
-                                :
-                                <p dangerouslySetInnerHTML={{__html: resultData}}></p>
-                            }
-                        </div>
-                    </div>
-                }
-                <div className="main-bottom">
-                    <div className="search-box">
-                        <textarea rows={rows} onChange={(e) => setInput(e.target.value)}
-                                  onKeyUp={(e) => {
-                                      if (e.key === 'Enter') {
-                                          onSent();
-                                      }
-                                  }}
-                                  value={input}
-                                  type="text"
-                                  placeholder="Enter a prompt here"
-                        />
-                        <div className="icon-container">
-                            <button><img src={assets.gallery_icon} alt=""/></button>
-                            <button><img src={assets.mic_icon} alt=""/></button>
-                            <button type="submit" onClick={() => onSent()}><img src={assets.send_icon} alt=""/></button>
-                        </div>
-                    </div>
-                    <p className="bottom-info">
-                        Gemini may display inaccurate info, including about people, so double-check its responses.
-                        <a href="#">Your privacy and Gemini Apps</a>
-                    </p>
-                </div>
-            </div>
-        </main>
-    );
-}
+				<div className="main-bottom">
+					<div className="search-box">
+						<input
+							onChange={(e) => {
+								setInput(e.target.value);
+							}}
+							value={input}
+							type="text"
+							placeholder="Enter the Prompt Here"
+						/>
+						<div>
+							<img src={assets.gallery_icon} alt="" />
+							<img src={assets.mic_icon} alt="" />
+							<img
+								src={assets.send_icon}
+								alt=""
+								onClick={() => {
+									onSent();
+								}}
+							/>
+						</div>
+					</div>
+					<div className="bottom-info">
+						<p>
+							Gemini may display inaccurate info, including about people, so
+							double-check its responses. Your privacy & Gemini Apps
+						</p>
+					</div>
+				</div>
+			</div>
+		</div>
+	);
+};
 
 export default Main;

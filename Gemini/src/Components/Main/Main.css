@@ -109,7 +109,7 @@ body {
     cursor: pointer;
 }
 
-.search-box textarea {
+.search-box input {
     flex: 1;
     background: transparent;
     border: none;
